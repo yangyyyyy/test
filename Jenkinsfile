@@ -28,10 +28,8 @@ pipeline {
         stage('build maven') {
             steps {
                 echo "star compile"
-                dir(SERVICE_DIR) {
-                    sh "ls -l"
-                    sh "mvn -U -am clean package"
-                }
+                sh "ls -l"
+                sh "mvn -U -am clean package"
             }
         }
 
@@ -39,22 +37,18 @@ pipeline {
             steps {
                 echo "start build image"
                 echo "image tag : ${build_tag}"
-                dir(SERVICE_DIR) {
-                    sh "ls -l"
-                    sh "docker build -t ${DOCKER_REGISTRY}:${build_tag} ."
-                }
+                sh "ls -l"
+                sh "docker build -t ${DOCKER_REGISTRY}:${build_tag} ."
             }
         }
 
         stage('push docker') {
             steps {
                 echo "start push image"
-                dir(SERVICE_DIR) {
-                    sh "ls -l"
-                    withCredentials([usernamePassword(credentialsId: 'docker_registry', passwordVariable: 'docker_registryPassword', usernameVariable: 'docker_registryUsername')]) {
-                        sh "docker login -u ${docker_registryUsername} -p ${docker_registryPassword} ${DOCKER_REGISTRY_HOST}"
-                        sh "docker push ${DOCKER_REGISTRY}:${build_tag}"
-                    }
+                sh "ls -l"
+                withCredentials([usernamePassword(credentialsId: 'docker_registry', passwordVariable: 'docker_registryPassword', usernameVariable: 'docker_registryUsername')]) {
+                    sh "docker login -u ${docker_registryUsername} -p ${docker_registryPassword} ${DOCKER_REGISTRY_HOST}"
+                    sh "docker push ${DOCKER_REGISTRY}:${build_tag}"
                 }
             }
         }
@@ -62,21 +56,17 @@ pipeline {
         stage('update yaml') {
             steps {
                 echo "start change yaml image tag"
-                dir(SERVICE_DIR) {
-                    sh "ls -l"
-                    sh "sed -i 's/<BUILD_TAG>/${build_tag}/' k8s.yaml"
-                    sh "cat k8s.yaml"
-                }
+                sh "ls -l"
+                sh "sed -i 's/<BUILD_TAG>/${build_tag}/' k8s.yaml"
+                sh "cat k8s.yaml"
             }
         }
 
         stage('deploy') {
             steps {
                 echo "start deploy"
-                dir(SERVICE_DIR) {
-                    sh "ls -l"
-                    sh "kubectl apply -f k8s.yaml"
-                }
+                sh "ls -l"
+                sh "kubectl apply -f k8s.yaml"
             }
         }
     }
