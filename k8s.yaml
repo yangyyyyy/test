@@ -16,7 +16,7 @@ spec:
       containers:
         - name: discovery-server
           imagePullPolicy: Always
-          image: 172.29.7.157:85/test/eureka-server:<BUILD_TAG>
+          image: 172.29.7.157:85/test/discovery-server:<BUILD_TAG>
           resources:
             requests:
               memory: 384Mi
